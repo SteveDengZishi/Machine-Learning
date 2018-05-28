@@ -6,11 +6,28 @@ Created on Mon May 28 13:14:49 2018
 @author: stevedeng
 """
 
-import pandas
+import pandas as pd
 
-# Read the dataset using pandas
-data_table = pandas.read_csv("house_data.csv")
-html = data_table[:100].to_html()
+def data_to_html():
+    # Read the dataset using pandas
+    data_table = pd.read_csv("house_data.csv")
+    html = data_table[:100].to_html()
+    
+    with open("data.html", "w") as outfile:
+        outfile.write(html)
+        
+def train_model():
+    df = pd.read_cvs("house_data.csv")
+    
+    # Delete irrelevant feature columns
+    del df["house_number"]
+    del df["unit_number"]
+    del df["street_name"]
+    del df["zip_code"]
 
-with open("data.html", "w") as outfile:
-    outfile.write(html)
+def main():
+    
+    
+
+if __name__ == "__main__":
+    main()    
