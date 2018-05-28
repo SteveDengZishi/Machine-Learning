@@ -10,6 +10,6 @@ import numpy as np
 #use numpy array to run SIMD instruction
 sizes = np.array([100.0, 298.3, 232.53, 458.90])
 
-sizes = sizes * 0.3
+sizes = sizes * 2
 print(sizes)
 
