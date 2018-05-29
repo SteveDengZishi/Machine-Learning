@@ -24,12 +24,13 @@ def train_model():
     df = pd.read_cvs("house_data.csv")
     
     # Delete irrelevant feature columns
+    # Dataframe works as a python dictionary
     del df["house_number"]
     del df["unit_number"]
     del df["street_name"]
     del df["zip_code"]
     
-    # Replace categorical data with one-hot encoded data
+    # Replace categorical data with one-hot encoded data(order is not meaningful)
     features_df = pd.get_dummies(df, columns=['garage_type','city'])
     
     # Remove the final sale price
@@ -38,8 +39,10 @@ def train_model():
     # Create the X and Y arrays and convert them to numpy matrix
     X = features_df.as_matrix()
     Y = df['sales_price'].as_matrix()
-
-
+    
+    # Split the dataset in 70% training and 30% testing
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3)
+    
 def main():
     
     
