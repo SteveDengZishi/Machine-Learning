@@ -64,7 +64,7 @@ def train_model():
     joblib.dump(model, 'trained_house_classifier_model.pkl')
 
 def error_checking():
-    error = mean_absolute_error(Y_test, model.predict(X_train))
+    error = mean_absolute_error(Y_test, model.predict(X_test))
     print("The mean absolute error for testing data is: %.2f" % error)
     
 def main():
