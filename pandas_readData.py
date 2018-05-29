@@ -9,7 +9,15 @@ Created on Mon May 28 13:14:49 2018
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn import ensemble
+from sklearn.metrics import mean_absolute_error
 from sklearn.externals import joblib
+
+#Globals
+X_train=None
+X_test=None
+Y_train=None
+Y_test=None
+model=None
 
 def data_to_html():
     #Read the dataset using pandas
@@ -41,10 +49,12 @@ def train_model():
     Y = df['sale_price'].as_matrix()
     
     #Split the dataset in 70% training and 30% testing
+    global X_train, X_test, Y_train, Y_test
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=0)
     
     #Calling sklearn Regressor using gradient boosting algorithm
     #The parameters are used to specify the decision tree parameters
+    global model
     model = ensemble.GradientBoostingRegressor(n_estimators=1000, learning_rate=0.1, max_depth=6, min_samples_leaf=9,\
                                                max_features=0.1, loss='huber')
     #Use your data to train the model
@@ -52,11 +62,15 @@ def train_model():
     
     #Save model
     joblib.dump(model, 'trained_house_classifier_model.pkl')
+
+def error_checking():
+    error = mean_absolute_error(Y_test, model.predict(X_train))
+    print("The mean absolute error for testing data is: %.2f" % error)
     
 def main():
     data_to_html()
     train_model()
-    
+    error_checking()
     
 if __name__ == "__main__":
     main()    
