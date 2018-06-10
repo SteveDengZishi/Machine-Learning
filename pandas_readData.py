@@ -12,7 +12,7 @@ from sklearn import ensemble
 from sklearn.metrics import mean_absolute_error
 from sklearn.externals import joblib
 
-#Globals
+#Globals Vars
 X_train=None
 X_test=None
 Y_train=None
@@ -64,8 +64,10 @@ def train_model():
     joblib.dump(model, 'trained_house_classifier_model.pkl')
 
 def error_checking():
-    error = mean_absolute_error(Y_test, model.predict(X_test))
-    print("The mean absolute error for testing data is: %.2f" % error)
+    error_train = mean_absolute_error(Y_train, model.predict(X_train))
+    print("The mean absolute error for testing data is: %.2f" % error_train)
+    error_test = mean_absolute_error(Y_test, model.predict(X_test))
+    print("The mean absolute error for testing data is: %.2f" % error_test)
     
 def main():
     data_to_html()
