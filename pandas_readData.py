@@ -5,7 +5,7 @@ Created on Mon May 28 13:14:49 2018
 
 @author: stevedeng
 """
-
+#machine learning project
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn import ensemble
