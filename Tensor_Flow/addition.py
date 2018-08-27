@@ -19,5 +19,5 @@ addition = tf.add(X, Y, name='addition')
 
 #create session
 with tf.Session() as session:
-    result = session.run(addition, feed_dict={X:[1], Y:[4]})
+    result = session.run(addition, feed_dict={X:[1,3], Y:[4,5]})
     print(result)
