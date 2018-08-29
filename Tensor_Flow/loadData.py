@@ -10,7 +10,16 @@ import tensorflow as tf
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
+X_scaled_training = None
+Y_scaled_training = None
+X__scaled_testing = None
+Y_scaled_testing = None
+
+X_scaler = None
+Y_scaler = None
+
 def readData():
+    global X_scaled_training, Y_scaled_training, X_scaled_testing, Y_scaled_testing, X_scaler, Y_scaler
     # Read csv data into dataframes using pandas
     # Load training data set from CSV file
     training_data_df = pd.read_csv("sales_data_training.csv", dtype=float)
