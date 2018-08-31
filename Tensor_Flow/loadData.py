@@ -18,6 +18,20 @@ Y_scaled_testing = None
 X_scaler = None
 Y_scaler = None
 
+# Define model parameters
+learning_rate = 0.001
+training_epochs = 100
+display_step = 5
+
+# Define how many inputs and outputs are in our neural network
+number_of_inputs = 9
+number_of_outputs = 1
+
+# Define how many neurons we want in each layer of our neural network
+layer_1_nodes = 50
+layer_2_nodes = 100
+layer_3_nodes = 50
+
 def readData():
     global X_scaled_training, Y_scaled_training, X_scaled_testing, Y_scaled_testing, X_scaler, Y_scaler
     # Read csv data into dataframes using pandas
@@ -67,6 +81,11 @@ def readData():
     print("\nThe size of the training/testing datasets are")
     print(X_scaled_training.shape, Y_scaled_training.shape)
     print(X_scaled_testing.shape, Y_scaled_testing.shape)
+    
+def model():
+    global number_of_inputs, number_of_outputs, learning_rate, training_epochs, display_step, layer_1_nodes, layer_2_nodes, layer_3_nodes
+    with tf.variable_scope('input'):
+        X = tf.placeholder(tf.float, shape=(None, number_of_inputs))
     
 def main():
     readData()
