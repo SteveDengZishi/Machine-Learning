@@ -84,8 +84,19 @@ def readData():
     
 def model():
     global number_of_inputs, number_of_outputs, learning_rate, training_epochs, display_step, layer_1_nodes, layer_2_nodes, layer_3_nodes
+    
+    # Input Layer
     with tf.variable_scope('input'):
         X = tf.placeholder(tf.float, shape=(None, number_of_inputs))
+        
+    # Layer 1
+    with tf.variable_scope('layer_1'):
+        weights = 
+        biases =
+        layer_1_output =
+    
+    # Layer 2
+    
     
 def main():
     readData()
