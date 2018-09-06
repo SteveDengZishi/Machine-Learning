@@ -69,26 +69,26 @@ def readData():
     X_scaled_training = X_scaler.fit_transform(X_training)
     Y_scaled_training = Y_scaler.fit_transform(Y_training)
     
-    print("The scale on X_data is: \n", X_scaler.scale_, "\nWith adjustments of: \n", X_scaler.min_)
-    print("\nThe scale on Y_data is: \n", Y_scaler.scale_, "\nWith adjustments of: \n", Y_scaler.min_)
-    print("\nNote: Y values were scaled by multiplying by {:.10f} and adding {:.4f}".format(Y_scaler.scale_[0], Y_scaler.min_[0]))
+    #print("The scale on X_data is: \n", X_scaler.scale_, "\nWith adjustments of: \n", X_scaler.min_)
+    #print("\nThe scale on Y_data is: \n", Y_scaler.scale_, "\nWith adjustments of: \n", Y_scaler.min_)
+    #print("\nNote: Y values were scaled by multiplying by {:.10f} and adding {:.4f}".format(Y_scaler.scale_[0], Y_scaler.min_[0]))
     
     # It's very important that the training and test data are scaled with the same scaler.
     X_scaled_testing = X_scaler.transform(X_testing)
     Y_scaled_testing = Y_scaler.transform(Y_testing)
     
     
-    print("\nThe size of the training/testing datasets are")
-    print(X_scaled_training.shape, Y_scaled_training.shape)
-    print(X_scaled_testing.shape, Y_scaled_testing.shape)
+    #print("\nThe size of the training/testing datasets are")
+    #print(X_scaled_training.shape, Y_scaled_training.shape)
+    #print(X_scaled_testing.shape, Y_scaled_testing.shape)
     
-def model():
+def trainModel():
     global number_of_inputs, number_of_outputs, learning_rate, training_epochs, display_step, layer_1_nodes, layer_2_nodes, layer_3_nodes
     
     # Section_1 define neural network layers
     # Input Layer
     with tf.variable_scope('input'):
-        X = tf.placeholder(tf.float, shape=(None, number_of_inputs))
+        X = tf.placeholder(tf.float32, shape=(None, number_of_inputs))
         
     # Layer 1
     with tf.variable_scope('layer_1'):
@@ -132,10 +132,22 @@ def model():
     # Section_3 define Optimizer function to run optimize on the neural network
     with tf.variable_scope('train'):
         optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
-    
+        
+    # Training Part using Session
+    # Create a tensorflow session to run operation
+    with tf.Session() as session:
+        # Initialize all variables and layers using global initializer
+        session.run(tf.global_variables_initializer())
+        
+        # Iteratively train model to fit the model
+        for i in range(training_epochs):
+            session.run(optimizer, feed_dict={X: X_scaled_training, Y: Y_scaled_training})
+            print("Training pass: {}".format(i))
+        print("Training Completed!")
+        
 def main():
     readData()
-
+    trainModel()
 
 if __name__ == "__main__":
     main()    
