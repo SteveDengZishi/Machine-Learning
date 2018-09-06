@@ -85,6 +85,7 @@ def readData():
 def model():
     global number_of_inputs, number_of_outputs, learning_rate, training_epochs, display_step, layer_1_nodes, layer_2_nodes, layer_3_nodes
     
+    # Section_1 define neural network layers
     # Input Layer
     with tf.variable_scope('input'):
         X = tf.placeholder(tf.float, shape=(None, number_of_inputs))
@@ -122,7 +123,15 @@ def model():
         prediction = tf.nn.relu(tf.matmul(layer_3_output, weights) + biases)
         
     
+    # Section_2 define cost function in order to measure the prediction accuracy neural network
+    with tf.variable_scope('cost'):
+        Y = tf.placeholder(tf.float32, shape=(None, 1))
+        # Need to calculate the mean square error of the value predicted
+        cost = tf.reduce_mean(tf.squared_difference(prediction, Y))
     
+    # Section_3 define Optimizer function to run optimize on the neural network
+    with tf.variable_scope('train'):
+        optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
     
 def main():
     readData()
