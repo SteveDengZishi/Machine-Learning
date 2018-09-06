@@ -98,6 +98,30 @@ def model():
         layer_1_output = tf.nn.relu(tf.matmul(X, weights) + biases)
     
     # Layer 2
+    with tf.variable_scope('layer_2'):
+        # Use tf.get_variable to insert a variable and specify the shape of the matrix
+        weights = tf.get_variable(name='weights2', shape=[layer_1_nodes, layer_2_nodes], initializer=tf.contrib.layers.xavier_initializer())
+        biases = tf.get_variable(name='biases2', shape=[layer_2_nodes], initializer=tf.zeros_initializer())
+        # Using relu and matrix multiplication to define the activation function
+        layer_2_output = tf.nn.relu(tf.matmul(layer_1_output, weights) + biases)
+    
+    # Layer 3
+    with tf.variable_scope('layer_3'):
+        # Use tf.get_variable to insert a variable and specify the shape of the matrix
+        weights = tf.get_variable(name='weights3', shape=[layer_2_nodes, layer_3_nodes], initializer=tf.contrib.layers.xavier_initializer())
+        biases = tf.get_variable(name='biases3', shape=[layer_3_nodes], initializer=tf.zeros_initializer())
+        # Using relu and matrix multiplication to define the activation function
+        layer_3_output = tf.nn.relu(tf.matmul(layer_2_output, weights) + biases)
+    
+    # Output Layer
+    with tf.variable_scope('output'):
+        # Use tf.get_variable to insert a variable and specify the shape of the matrix
+        weights = tf.get_variable(name='weights4', shape=[layer_3_nodes, number_of_outputs], initializer=tf.contrib.layers.xavier_initializer())
+        biases = tf.get_variable(name='biases4', shape=[number_of_outputs], initializer=tf.zeros_initializer())
+        # Using relu and matrix multiplication to define the activation function
+        prediction = tf.nn.relu(tf.matmul(layer_3_output, weights) + biases)
+        
+    
     
     
 def main():
