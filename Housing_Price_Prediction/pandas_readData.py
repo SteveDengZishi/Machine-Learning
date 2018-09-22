@@ -65,7 +65,7 @@ def train_model():
 
 def error_checking():
     error_train = mean_absolute_error(Y_train, model.predict(X_train))
-    print("The mean absolute error for testing data is: %.2f" % error_train)
+    print("The mean absolute error for training data is: %.2f" % error_train)
     error_test = mean_absolute_error(Y_test, model.predict(X_test))
     print("The mean absolute error for testing data is: %.2f" % error_test)
     
