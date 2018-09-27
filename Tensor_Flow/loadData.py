@@ -151,9 +151,18 @@ def trainModel():
         
         # Iteratively train model to fit the model
         for i in range(training_epochs):
+            #run optimizer
             session.run(optimizer, feed_dict={X: X_scaled_training, Y: Y_scaled_training})
+            
+            #run cost functions to get training & testing costs
             training_cost, training_log = session.run([cost, log], feed_dict={X: X_scaled_training, Y: Y_scaled_training})
             testing_cost, testing_log = session.run([cost, log], feed_dict={X: X_scaled_testing, Y: Y_scaled_testing})
+            
+            #log functions to write log to files
+            #tensorboard --logdir=logs
+            training_writer.add_summary(training_log, i)
+            testing_writer.add_summary(testing_log, i)
+            
             print("Training pass: {}".format(i))
             print("The training cost is {} and the testing cost is {}".format(training_cost, testing_cost))
             
