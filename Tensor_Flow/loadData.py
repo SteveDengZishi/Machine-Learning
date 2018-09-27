@@ -66,6 +66,7 @@ def readData():
     
     
     # Scale both the training inputs and outputs
+    #print(Y_training)
     X_scaled_training = X_scaler.fit_transform(X_training)
     Y_scaled_training = Y_scaler.fit_transform(Y_training)
     
@@ -133,17 +134,33 @@ def trainModel():
     with tf.variable_scope('train'):
         optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
         
+    #logging to show on tensor board
+    with tf.variable_scope('logging'):
+        tf.summary.scalar('current_cost', cost)
+        log = tf.summary.merge_all()
+        
     # Training Part using Session
     # Create a tensorflow session to run operation
     with tf.Session() as session:
         # Initialize all variables and layers using global initializer
         session.run(tf.global_variables_initializer())
         
+        #writing logs
+        training_writer = tf.summary.FileWriter('./logs/training', session.graph)
+        testing_writer = tf.summary.FileWriter('./logs/testing', session.graph)
+        
         # Iteratively train model to fit the model
         for i in range(training_epochs):
             session.run(optimizer, feed_dict={X: X_scaled_training, Y: Y_scaled_training})
+            training_cost, training_log = session.run([cost, log], feed_dict={X: X_scaled_training, Y: Y_scaled_training})
+            testing_cost, testing_log = session.run([cost, log], feed_dict={X: X_scaled_testing, Y: Y_scaled_testing})
             print("Training pass: {}".format(i))
+            print("The training cost is {} and the testing cost is {}".format(training_cost, testing_cost))
+            
+        final_training_cost = session.run(cost, feed_dict={X: X_scaled_training, Y: Y_scaled_training})
+        final_testing_cost = session.run(cost, feed_dict={X: X_scaled_testing, Y: Y_scaled_testing})
         print("Training Completed!")
+        print("The final training cost is {} and the fianl testing cost is {}".format(final_training_cost, final_testing_cost))
         
 def main():
     readData()

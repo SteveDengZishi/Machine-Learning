@@ -55,7 +55,7 @@ def train_model():
     #Calling sklearn Regressor using gradient boosting algorithm
     #The parameters are used to specify the decision tree parameters
     global model
-    model = ensemble.GradientBoostingRegressor(n_estimators=1000, learning_rate=0.1, max_depth=6, min_samples_leaf=9,\
+    model = ensemble.GradientBoostingRegressor(n_estimators=500, learning_rate=0.01, max_depth=8, min_samples_leaf=9,\
                                                max_features=0.1, loss='huber')
     #Use your data to train the model
     model.fit(X_train, Y_train)
