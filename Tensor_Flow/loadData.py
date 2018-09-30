@@ -9,6 +9,7 @@ Created on Mon Aug 27 17:02:37 2018
 import tensorflow as tf
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
 
 X_scaled_training = None
 Y_scaled_training = None
@@ -24,7 +25,7 @@ training_epochs = 100
 display_step = 5
 
 # Define how many inputs and outputs are in our neural network
-number_of_inputs = 9
+number_of_inputs = 63
 number_of_outputs = 1
 
 # Define how many neurons we want in each layer of our neural network
@@ -36,25 +37,25 @@ def readData():
     global X_scaled_training, Y_scaled_training, X_scaled_testing, Y_scaled_testing, X_scaler, Y_scaler
     # Read csv data into dataframes using pandas
     # Load training data set from CSV file
-    training_data_df = pd.read_csv("sales_data_training.csv", dtype=float)
+    df = pd.read_csv("house_data.csv")
 
-    # Pull out columns for X (data to train with) and Y (value to predict)
-    X_training = training_data_df.drop('total_earnings', axis=1).as_matrix()
-    #double [[]] is to make every row a standalone list
-    Y_training = training_data_df[['total_earnings']].as_matrix()
+    del df["house_number"]
+    del df["unit_number"]
+    del df["street_name"]
+    del df["zip_code"]
     
-    # Using the following way will pass by reference and lose column permanently
-    # X_df = training_data_df
-    # del X_df['total_earnings']
-    # X_matrix = X_df.as_matrix()
-    # print(training_data_df.as_matrix())
+    #Replace categorical data with one-hot encoded data(order is not meaningful)
+    features_df = pd.get_dummies(df, columns=['garage_type','city'])
     
-    # Load testing data set from CSV file
-    test_data_df = pd.read_csv("sales_data_test.csv", dtype=float)
+    #Remove the final sale price
+    del features_df['sale_price']
     
-    # Pull out columns for X (data to train with) and Y (value to predict)
-    X_testing = test_data_df.drop('total_earnings', axis=1).values
-    Y_testing = test_data_df[['total_earnings']].values
+    #Create the X and Y arrays and convert them to numpy matrix
+    X = features_df.as_matrix()
+    Y = df[['sale_price']].as_matrix()
+    
+    #Split the dataset in 70% training and 30% testing
+    X_training, X_testing, Y_training, Y_testing = train_test_split(X, Y, test_size=0.3, random_state=0)
     
     #print("X_training is : \n", X_training)
     #print("Y_training is: \n", Y_training)
@@ -137,8 +138,10 @@ def trainModel():
     #logging to show on tensor board
     with tf.variable_scope('logging'):
         tf.summary.scalar('current_cost', cost)
+        tf.histogram('predicted_value', prediction)
         log = tf.summary.merge_all()
-        
+    
+    saver = tf.train.Saver()
     # Training Part using Session
     # Create a tensorflow session to run operation
     with tf.Session() as session:
@@ -161,7 +164,9 @@ def trainModel():
             #log functions to write log to files
             #tensorboard --logdir=logs
             training_writer.add_summary(training_log, i)
+            training_writer.flush()
             testing_writer.add_summary(testing_log, i)
+            testing_writer.flush()
             
             print("Training pass: {}".format(i))
             print("The training cost is {} and the testing cost is {}".format(training_cost, testing_cost))
@@ -170,6 +175,8 @@ def trainModel():
         final_testing_cost = session.run(cost, feed_dict={X: X_scaled_testing, Y: Y_scaled_testing})
         print("Training Completed!")
         print("The final training cost is {} and the fianl testing cost is {}".format(final_training_cost, final_testing_cost))
+        save_path = saver.save(session, './models/trained_model.ckpt')
+        print("Model saved at: ", save_path)
         
 def main():
     readData()
