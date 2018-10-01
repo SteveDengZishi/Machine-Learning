@@ -21,7 +21,7 @@ Y_scaler = None
 
 # Define model parameters
 learning_rate = 0.001
-training_epochs = 100
+training_epochs = 500
 display_step = 5
 
 # Define how many inputs and outputs are in our neural network
@@ -34,7 +34,7 @@ layer_2_nodes = 100
 layer_3_nodes = 50
 
 def readData():
-    global X_scaled_training, Y_scaled_training, X_scaled_testing, Y_scaled_testing, X_scaler, Y_scaler
+    global X_scaled_training, Y_scaled_training, X_scaled_testing, Y_scaled_testing, X_scaler, Y_scaler, Y_testing
     # Read csv data into dataframes using pandas
     # Load training data set from CSV file
     df = pd.read_csv("house_data.csv")
@@ -90,7 +90,7 @@ def trainModel():
     # Section_1 define neural network layers
     # Input Layer
     with tf.variable_scope('input'):
-        X = tf.placeholder(tf.float32, shape=(None, number_of_inputs))
+        X = tf.placeholder(tf.float32, shape=(None, number_of_inputs), name='X')
         
     # Layer 1
     with tf.variable_scope('layer_1'):
@@ -122,7 +122,7 @@ def trainModel():
         weights = tf.get_variable(name='weights4', shape=[layer_3_nodes, number_of_outputs], initializer=tf.contrib.layers.xavier_initializer())
         biases = tf.get_variable(name='biases4', shape=[number_of_outputs], initializer=tf.zeros_initializer())
         # Using relu and matrix multiplication to define the activation function
-        prediction = tf.nn.relu(tf.matmul(layer_3_output, weights) + biases)
+        prediction = tf.nn.relu(tf.matmul(layer_3_output, weights) + biases, name="prediction")
         
     
     # Section_2 define cost function in order to measure the prediction accuracy neural network
@@ -138,7 +138,7 @@ def trainModel():
     #logging to show on tensor board
     with tf.variable_scope('logging'):
         tf.summary.scalar('current_cost', cost)
-        tf.histogram('predicted_value', prediction)
+        tf.summary.histogram('predicted_value', prediction)
         log = tf.summary.merge_all()
     
     saver = tf.train.Saver()
@@ -175,8 +175,22 @@ def trainModel():
         final_testing_cost = session.run(cost, feed_dict={X: X_scaled_testing, Y: Y_scaled_testing})
         print("Training Completed!")
         print("The final training cost is {} and the fianl testing cost is {}".format(final_training_cost, final_testing_cost))
+        
         save_path = saver.save(session, './models/trained_model.ckpt')
         print("Model saved at: ", save_path)
+        
+        # Now that the neural network is trained, let's use it to make predictions for our test data.
+        # Pass in the X testing data and run the "prediciton" operation
+        Y_predicted_scaled = session.run(prediction, feed_dict={X: X_scaled_testing})
+    
+        # Unscale the data back to it's original units (dollars)
+        Y_predicted = Y_scaler.inverse_transform(Y_predicted_scaled)
+    
+        house_real_pricing = Y_testing[:4]
+        predicted_pricing = Y_predicted[:4]
+    
+        print("The actual house price of House_1 was $\n{}".format(house_real_pricing))
+        print("Our neural network predicted prices of $\n{}".format(predicted_pricing))
         
 def main():
     readData()
