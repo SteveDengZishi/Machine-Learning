@@ -29,9 +29,9 @@ number_of_inputs = 63
 number_of_outputs = 1
 
 # Define how many neurons we want in each layer of our neural network
-layer_1_nodes = 50
-layer_2_nodes = 100
-layer_3_nodes = 50
+layer_1_nodes = 75
+layer_2_nodes = 150
+layer_3_nodes = 75
 
 def readData():
     global X_scaled_training, Y_scaled_training, X_scaled_testing, Y_scaled_testing, X_scaler, Y_scaler, Y_testing
