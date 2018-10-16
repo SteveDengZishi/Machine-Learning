@@ -34,7 +34,7 @@ def readData():
     #Split the dataset in 70% training and 30% testing
     X_training, X_testing, Y_training, Y_testing = train_test_split(X, Y, test_size=0.3, random_state=0)
     
-    #print("X_training is : \n", X_training)
+    print("X_testing is : \n", X_testing[75:80])
     #print("Y_training is: \n", Y_training)
     
     # All data needs to be scaled to a small range like 0 to 1 for the neural

@@ -10,6 +10,7 @@ import tensorflow as tf
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
+import datetime
 
 X_scaled_training = None
 Y_scaled_training = None
@@ -20,7 +21,7 @@ X_scaler = None
 Y_scaler = None
 
 # Define model parameters
-learning_rate = 0.001
+learning_rate = 0.0015
 training_epochs = 500
 display_step = 5
 
@@ -32,6 +33,8 @@ number_of_outputs = 1
 layer_1_nodes = 75
 layer_2_nodes = 150
 layer_3_nodes = 75
+
+RUN_NAME = str(datetime.datetime.now()).replace(' ', '_')
 
 def readData():
     global X_scaled_training, Y_scaled_training, X_scaled_testing, Y_scaled_testing, X_scaler, Y_scaler, Y_testing
@@ -149,8 +152,9 @@ def trainModel():
         session.run(tf.global_variables_initializer())
         
         #writing logs
-        training_writer = tf.summary.FileWriter('./logs/training', session.graph)
-        testing_writer = tf.summary.FileWriter('./logs/testing', session.graph)
+        global RUN_NAME
+        training_writer = tf.summary.FileWriter('./logs/{}/training'.format(RUN_NAME), session.graph)
+        testing_writer = tf.summary.FileWriter('./logs/{}/testing'.format(RUN_NAME), session.graph)
         
         # Iteratively train model to fit the model
         for i in range(training_epochs):
@@ -191,6 +195,34 @@ def trainModel():
     
         print("The actual house price of House_1 was $\n{}".format(house_real_pricing))
         print("Our neural network predicted prices of $\n{}".format(predicted_pricing))
+        
+        #build saved model for cloud use
+        model_builder = tf.saved_model.builder.SavedModelBuilder("./exported_model")
+
+        inputs = {
+            'input': tf.saved_model.utils.build_tensor_info(X)
+            }
+        outputs = {
+            'house_price': tf.saved_model.utils.build_tensor_info(prediction)
+            }
+    
+        signature_def = tf.saved_model.signature_def_utils.build_signature_def(
+            inputs=inputs,
+            outputs=outputs,
+            #what google cloud will be looking for
+            method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME
+        )
+    
+        model_builder.add_meta_graph_and_variables(
+            session,
+            #what google cloud will be looking for
+            tags=[tf.saved_model.tag_constants.SERVING],
+            signature_def_map={
+                tf.saved_model.signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY: signature_def
+            }
+        )
+    
+        model_builder.save()
         
 def main():
     readData()
