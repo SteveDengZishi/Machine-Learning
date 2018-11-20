@@ -2,4 +2,4 @@
 *.cache
 *.DS_Store
 *.html
-stock_prediction/stock_dfs/*
+*.csv
